@@ -4,11 +4,11 @@
   "description": "Drink.it api project",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:coverage": "jest --coverage --passWithNoTests",
+    "test": "jest -c jest.unity.json",
+    "test:coverage": "npm test -- --coverage --passWithNoTests",
     "dev": "npx nodemon",
-    "build": "rimraf ./dist && tsc",
-    "start": "node build/index.js",
+    "build": "rimraf ./dist && tsc --build --verbose",
+    "start": "node dist/index.js",
     "lint": "eslint -c .eslintrc.json ./src/**/*.ts --fix",
     "prepare": "husky install"
   },
