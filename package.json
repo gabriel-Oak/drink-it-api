@@ -7,7 +7,7 @@
     "test": "jest -c jest.unity.json",
     "test:coverage": "npm test -- --coverage --passWithNoTests",
     "dev": "npx nodemon",
-    "build": "rimraf ./dist && npx tsc --build --verbose",
+    "build": "rimraf ./dist && node ./node_modules/typescript/lib/tsc.js --build --verbose",
     "start": "node dist/index.js",
     "lint": "eslint -c .eslintrc.json ./src/**/*.ts --fix",
     "prepare": "husky install"
