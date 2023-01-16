@@ -1,5 +1,7 @@
 # Drink.it API
 
+deploied at https://drink-it.fly.dev/health
+
 Hello, this is supposed to be a project for fun caching the cocktail db. Made with clean
 
 Requisites
