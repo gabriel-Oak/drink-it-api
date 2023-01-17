@@ -48,7 +48,7 @@ export const cocktailsListMock = {
   ]
 }
 
-export const cocktailDetailResponse = {
+export const cocktailDetailMock = {
   drinks: [
     {
       idDrink: '11007',

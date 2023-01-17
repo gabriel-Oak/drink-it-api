@@ -5,7 +5,7 @@ import { getCocktailsQuery } from '../../models/get-cocktails';
 
 type getCocktailsUsecaseErrors = CocktailDatasourceError;
 
-export interface IGetCoktailsUsecase {
+export interface IGetCocktailsUsecase {
   execute: (
     query: getCocktailsQuery
   ) => Promise<Either<getCocktailsUsecaseErrors, Cocktail[]>>
