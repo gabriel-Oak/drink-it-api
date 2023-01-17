@@ -77,37 +77,37 @@ export default class Cocktail {
   public ingredients!: Ingredient[];
 
   @Column()
-  public category?: string;
+  public category?: string | null;
 
   @Column()
-  public video?: string;
+  public video?: string | null;
 
   @Column()
-  public tags?: string;
+  public tags?: string | null;
 
   @Column()
-  public instructions?: string;
+  public instructions?: string | null;
 
   @Column()
-  public instructionsES?: string;
+  public instructionsES?: string | null;
 
   @Column()
-  public instructionsDE?: string;
+  public instructionsDE?: string | null;
 
   @Column()
-  public instructionsFR?: string;
+  public instructionsFR?: string | null;
 
   @Column()
-  public instructionsIT?: string;
+  public instructionsIT?: string | null;
 
   @Column()
-  public instructionsPT?: string;
+  public instructionsPtBR?: string | null;
 
   @Column()
-  public dateModified?: string;
+  public dateModified?: string | null;
 
   @Column()
-  public iba?: string;
+  public iba?: string | null;
 
   constructor(props: Cocktail) {
     Object.assign(this, {
@@ -143,6 +143,7 @@ export default class Cocktail {
       instructionsIT: props.strInstructionsIT,
       dateModified: props.dateModified,
       iba: props.strIBA,
+      instructionsPtBR: null,
       ingredients
     });
   }
