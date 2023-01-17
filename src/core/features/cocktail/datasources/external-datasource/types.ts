@@ -10,8 +10,8 @@ export class CocktailDatasourceError extends BaseError {
 export interface ICocktailExternalDatasource {
   getCocktailsList: (
     query: getCocktailsQuery
-  ) => Promise<Either<CocktailDatasourceError, cocktailList>>
+  ) => Promise<Either<CocktailDatasourceError, cocktailList>>;
   getCocktailDetail: (
     cocktailId: string
-  ) => Promise<Either<CocktailDatasourceError, Cocktail>>
+  ) => Promise<Either<CocktailDatasourceError, Cocktail>>;
 }
