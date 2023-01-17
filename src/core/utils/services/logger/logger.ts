@@ -10,19 +10,19 @@ export default class LoggerService implements ILoggerService {
     }
   }
 
-  info(message: string, data: unknown) {
+  info(message: string, data?: unknown) {
     this.logger.info(message, data);
   }
 
-  error(message: string, data: unknown) {
+  error(message: string, data?: unknown) {
     this.logger.error(message, data);
   }
 
-  warn(message: string, data: unknown) {
+  warn(message: string, data?: unknown) {
     this.logger.warn(message, data);
   }
 
-  debug(message: string, data: unknown) {
+  debug(message: string, data?: unknown) {
     this.logger.debug(message, data);
   }
 }

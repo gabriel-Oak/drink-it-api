@@ -11,10 +11,10 @@ export class Left<E> {
 export class Right<R> {
   readonly isError = false;
 
-  public value!: R;
+  public success!: R;
 
-  constructor(value: R) {
-    this.value = value;
+  constructor(success: R) {
+    this.success = success;
   }
 }
 

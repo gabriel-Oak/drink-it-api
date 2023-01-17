@@ -1,5 +1,4 @@
 import { config } from 'dotenv';
+console.log('oooooooooooooi');
 
-config({
-  path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development'
-});
+config({ path: '.env' });
