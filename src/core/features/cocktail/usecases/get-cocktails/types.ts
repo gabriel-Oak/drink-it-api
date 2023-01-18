@@ -3,7 +3,9 @@ import { CocktailDatasourceError } from '../../datasources/external-datasource/t
 import Cocktail from '../../models/cocktail';
 import { getCocktailsQuery } from '../../models/get-cocktails';
 
-type getCocktailsUsecaseErrors = CocktailDatasourceError;
+export type getCocktailsUsecaseErrors = CocktailDatasourceError;
+
+export type cocktailMap = Record<string, Cocktail>;
 
 export interface IGetCocktailsUsecase {
   execute: (

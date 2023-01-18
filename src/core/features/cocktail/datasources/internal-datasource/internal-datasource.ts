@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ILoggerService } from '../../../../utils/services/logger/types';
 import { Left, Right } from '../../../../utils/types';
 import Cocktail from '../../models/cocktail';
@@ -17,6 +17,7 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
   async saveOne(cocktail: Cocktail) {
     try {
       const cocktailExists = await this.cocktailRepository.findOne({ where: { id: cocktail.id } });
+
       if (!cocktailExists) await this.cocktailRepository.save(cocktail);
 
       for (const measure of cocktail.measures) {
@@ -49,7 +50,8 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
   async findOne(cocktailId: string) {
     try {
       const cocktail = await this.cocktailRepository.findOne({
-        where: { id: cocktailId }
+        where: { id: cocktailId },
+        relations: ['measures', 'measures.data']
       });
       return new Right(cocktail);
     } catch (e) {
@@ -61,4 +63,22 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
       return new Left(error);
     }
   }
+
+  async findMany(cocktailsIds: string[]) {
+    try {
+      const cocktails = await this.cocktailRepository.find({
+        where: {
+          id: In(cocktailsIds)
+        }
+      });
+      return new Right(cocktails);
+    } catch (e) {
+      const error = new InternalCocktailDatasourceError((e as any).message ?? 'Someting went search cocktail', {
+        error: e,
+        cocktailsIds
+      });
+      this.logger.error(error.message, error);
+      return new Left(error);
+    }
+  };
 }

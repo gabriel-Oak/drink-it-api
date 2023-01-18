@@ -9,4 +9,5 @@ export class InternalCocktailDatasourceError extends BaseError {
 export interface IInternalCocktailDatasource {
   saveOne: (cocktails: Cocktail) => Promise<Either<InternalCocktailDatasourceError, null>>;
   findOne: (cocktailId: string) => Promise<Either<InternalCocktailDatasourceError, Cocktail | null>>;
+  findMany: (cocktailsIds: string[]) => Promise<Either<InternalCocktailDatasourceError, Cocktail[]>>;
 }

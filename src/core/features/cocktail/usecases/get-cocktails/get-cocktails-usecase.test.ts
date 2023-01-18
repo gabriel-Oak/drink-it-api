@@ -10,6 +10,7 @@ import { IInternalCocktailDatasource } from '../../datasources/internal-datasour
 describe('GetCocktailsUsecase Tests', () => {
   const externalDatasourceMock = mock<ICocktailExternalDatasource>();
   const internalDatasourceMock = mock<IInternalCocktailDatasource>();
+
   const usecase: IGetCocktailsUsecase = new GetCocktailsUsecase(
     externalDatasourceMock,
     internalDatasourceMock
@@ -23,6 +24,8 @@ describe('GetCocktailsUsecase Tests', () => {
   it('Should get full cocktails list', async () => {
     externalDatasourceMock.getCocktailsList
       .mockImplementation(async () => new Right(cocktailsListMock.drinks));
+    internalDatasourceMock.findMany
+      .mockImplementation(async () => new Right([Cocktail.fromSource(cocktailDetailMock.drinks[0] as any)]));
     externalDatasourceMock.getCocktailDetail
       .mockImplementation(async () => new Right(Cocktail.fromSource(cocktailDetailMock.drinks[0] as any)));
     const result = await usecase.execute({ i: 'vodka' });
@@ -43,8 +46,10 @@ describe('GetCocktailsUsecase Tests', () => {
   it('Should deal with get details error', async () => {
     externalDatasourceMock.getCocktailsList
       .mockImplementation(async () => new Right(cocktailsListMock.drinks));
+    internalDatasourceMock.findMany
+      .mockImplementation(async () => new Right([Cocktail.fromSource(cocktailDetailMock.drinks[0] as any)]));
     externalDatasourceMock.getCocktailDetail
-      .mockImplementation(async () => new Left(new CocktailDatasourceError('Ooops')));
+      .mockImplementation(async () => new Right(Cocktail.fromSource(cocktailDetailMock.drinks[0] as any)));
     const result = await usecase.execute({ i: 'vodka' });
 
     expect(result).toBeInstanceOf(Right);

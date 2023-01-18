@@ -77,4 +77,20 @@ describe('InternalCocktailDatasource Tests', () => {
     expect(result).toBeInstanceOf(Left);
     expect((result as Left<unknown>).error).toBeInstanceOf(InternalCocktailDatasourceError);
   });
+
+  it('Should find may cocktails', async () => {
+    cocktailRepositoryMock.find.mockImplementation(async () => [cocktailMock]);
+    const result = await datasource.findMany(['7382']);
+
+    expect(result).toBeInstanceOf(Right);
+    expect((result as Right<unknown>).success).toBeInstanceOf(Array<Cocktail>);
+  });
+
+  it('Should deal with finding many errors', async () => {
+    cocktailRepositoryMock.find.mockRejectedValue(Error('Crap you to beaultiful for this'));
+    const result = await datasource.findMany(['7382']);
+
+    expect(result).toBeInstanceOf(Left);
+    expect((result as Left<unknown>).error).toBeInstanceOf(InternalCocktailDatasourceError);
+  });
 });

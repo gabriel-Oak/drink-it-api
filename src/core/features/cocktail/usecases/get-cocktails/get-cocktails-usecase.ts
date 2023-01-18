@@ -2,15 +2,15 @@ import { Right } from '../../../../utils/types';
 import { ICocktailExternalDatasource } from '../../datasources/external-datasource/types';
 import { IInternalCocktailDatasource } from '../../datasources/internal-datasource/types';
 import Cocktail from '../../models/cocktail';
-import { getCocktailsQuery } from '../../models/get-cocktails';
-import { IGetCocktailsUsecase } from './types';
+import { cocktailList, getCocktailsQuery } from '../../models/get-cocktails';
+import { cocktailMap, IGetCocktailsUsecase } from './types';
 
 export default class GetCocktailsUsecase implements IGetCocktailsUsecase {
   constructor(
     private readonly externalDatasource: ICocktailExternalDatasource,
     private readonly internalDatasource: IInternalCocktailDatasource
   ) {
-    this.getDetail = this.getDetail.bind(this);
+    this.getDetails = this.getDetails.bind(this);
     this.execute = this.execute.bind(this);
     this.saveCocktails = this.saveCocktails.bind(this);
   }
@@ -21,19 +21,45 @@ export default class GetCocktailsUsecase implements IGetCocktailsUsecase {
     }
   }
 
-  async getDetail({ idDrink }: { idDrink: string }) {
-    const result = await this.externalDatasource.getCocktailDetail(idDrink);
-    return result.isError ? null : result.success;
+  async getDetails(cocktails: cocktailList) {
+    // Get previusly storaged cocktails
+    const internalResults = await this.internalDatasource.findMany(cocktails.map((c) => c.idDrink));
+    const internalCocktails: cocktailMap = {};
+    if (!internalResults.isError) {
+      internalResults.success.forEach((cocktail) => internalCocktails[cocktail.id] = cocktail);
+    }
+
+    // Get the others from api
+    const externalResults = await Promise.all(
+      cocktails
+        .filter(({ idDrink }) => !internalCocktails[idDrink])
+        .map(async ({ idDrink }) => await this.externalDatasource.getCocktailDetail(idDrink))
+    );
+    const externalCocktails: cocktailMap = {};
+    externalResults.forEach((result) => {
+      if (!result.isError && result.success) {
+        externalCocktails[result.success.id] = result.success;
+      }
+    });
+
+    // Saves only what doesn't exist in storage
+    void this.saveCocktails(Object.values(externalCocktails));
+
+    // Assemble final result and BAMM
+    const finalResult: Cocktail[] = [];
+    cocktails.forEach(({ idDrink }) => {
+      if (internalCocktails[idDrink]) return finalResult.push(internalCocktails[idDrink]);
+      if (externalCocktails[idDrink]) return finalResult.push(externalCocktails[idDrink]);
+    });
+
+    return finalResult;
   }
 
   async execute(query: getCocktailsQuery) {
     const listResult = await this.externalDatasource.getCocktailsList(query);
     if (listResult.isError) return listResult;
 
-    const rawCocktails = await Promise.all(listResult.success.map(this.getDetail));
-    const cocktails = rawCocktails.filter(Boolean) as Cocktail[];
-    void this.saveCocktails(cocktails);
-
+    const cocktails: Cocktail[] = await this.getDetails(listResult.success);
     return new Right(cocktails);
   }
 }

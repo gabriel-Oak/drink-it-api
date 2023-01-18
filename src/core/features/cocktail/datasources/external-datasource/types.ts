@@ -13,5 +13,5 @@ export interface ICocktailExternalDatasource {
   ) => Promise<Either<CocktailDatasourceError, cocktailList>>;
   getCocktailDetail: (
     cocktailId: string
-  ) => Promise<Either<CocktailDatasourceError, Cocktail>>;
+  ) => Promise<Either<CocktailDatasourceError, Cocktail | null>>;
 }

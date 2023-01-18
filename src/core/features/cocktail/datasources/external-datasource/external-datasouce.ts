@@ -1,7 +1,7 @@
 import { COCKTAIL_API } from '../../../../utils/constants';
 import { IHttpService } from '../../../../utils/services/http-service/types';
 import { ILoggerService } from '../../../../utils/services/logger/types';
-import { Either, Left, Right } from '../../../../utils/types';
+import { Left, Right } from '../../../../utils/types';
 import Cocktail from '../../models/cocktail';
 import { GetCocktailDetailsResponse, GetCocktailsListResponse, getCocktailsQuery } from '../../models/get-cocktails';
 import { CocktailDatasourceError, ICocktailExternalDatasource } from './types';
@@ -29,17 +29,15 @@ export default class CocktailExternalDatasource implements ICocktailExternalData
     }
   }
 
-  async getCocktailDetail(cocktailId: string): Promise<Either<CocktailDatasourceError, Cocktail>> {
+  async getCocktailDetail(cocktailId: string) {
     try {
       const result = await this.httpService.get<GetCocktailDetailsResponse>(`${COCKTAIL_API}/lookup.php`, {
         params: { i: cocktailId }
       });
 
-      if (!result.drinks?.length) {
-        return new Left(new CocktailDatasourceError(`Couldn't find any drinks for this id ${cocktailId}`));
-      }
-
-      return new Right(Cocktail.fromSource(result.drinks[0]));
+      return new Right(result.drinks?.[0]
+        ? Cocktail.fromSource(result.drinks?.[0])
+        : null);
     } catch (e) {
       const error = new CocktailDatasourceError(
         'Something wen wrong consulting cocktails service',
