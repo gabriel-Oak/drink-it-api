@@ -12,7 +12,8 @@
     "start": "node dist/index.js",
     "lint": "eslint -c .eslintrc.json ./src/**/*.ts --fix",
     "prepare": "npx husky install",
-    "deploy": "/home/gabriel/.fly/bin/flyctl deploy"
+    "deploy": "/home/gabriel/.fly/bin/flyctl deploy",
+    "secrets": "/home/gabriel/.fly/bin/flyctl secrets set"
   },
   "repository": {
     "type": "git",
