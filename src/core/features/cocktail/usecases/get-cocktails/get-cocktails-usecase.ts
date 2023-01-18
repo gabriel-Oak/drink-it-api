@@ -1,3 +1,4 @@
+import { ICacheService } from '../../../../utils/services/cache-service/types';
 import { Right } from '../../../../utils/types';
 import { ICocktailExternalDatasource } from '../../datasources/external-datasource/types';
 import { IInternalCocktailDatasource } from '../../datasources/internal-datasource/types';
@@ -8,7 +9,8 @@ import { cocktailMap, IGetCocktailsUsecase } from './types';
 export default class GetCocktailsUsecase implements IGetCocktailsUsecase {
   constructor(
     private readonly externalDatasource: ICocktailExternalDatasource,
-    private readonly internalDatasource: IInternalCocktailDatasource
+    private readonly internalDatasource: IInternalCocktailDatasource,
+    private readonly cacheService: ICacheService
   ) {
     this.getDetails = this.getDetails.bind(this);
     this.execute = this.execute.bind(this);
@@ -56,10 +58,17 @@ export default class GetCocktailsUsecase implements IGetCocktailsUsecase {
   }
 
   async execute(query: getCocktailsQuery) {
+    // Faster without cache =s
+    // const encodedQuery = `${Object.keys(query)[0]}${encodeURIComponent(Object.values(query)[0])}`;
+    // const cache = await this.cacheService.get<Cocktail[]>(`cocktail:list:${encodedQuery}`);
+    // if (cache) return new Right(cache);
+
     const listResult = await this.externalDatasource.getCocktailsList(query);
     if (listResult.isError) return listResult;
 
     const cocktails: Cocktail[] = await this.getDetails(listResult.success);
+
+    // void this.cacheService.set(`cocktail:list:${encodedQuery}`, cocktails);
     return new Right(cocktails);
   }
 }

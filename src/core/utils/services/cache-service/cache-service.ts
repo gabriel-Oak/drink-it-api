@@ -12,6 +12,7 @@ export default class CacheService implements ICacheService {
   async get<T>(key: string) {
     try {
       let value: unknown = await this.client.get(key);
+
       try {
         value = value ? JSON.parse(value as string) as T : null
       } catch (_) {
