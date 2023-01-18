@@ -1,5 +1,8 @@
 import 'reflect-metadata';
-import './express/config';
-import startServer from './express/server'
+import './express-DEPRECATED/config';
+import startServerFastify from './fastify/server';
+// import startServer from './express-DEPRECATED/server'
 
-startServer();
+// startServer();
+startServerFastify()
+  .catch(console.error);

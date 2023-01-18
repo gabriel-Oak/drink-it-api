@@ -1,9 +1,9 @@
 import { env } from 'process';
 import app from './app';
 
-export default function startServer() {
+export default async function startServerFastify() {
   const port = env.PORT ?? 8080;
-  app.listen(port);
+  await app.listen({ port: +port });
 
   // eslint-disable-next-line no-console
   console.log(`Servidor iniciado na porta ${port}`);
