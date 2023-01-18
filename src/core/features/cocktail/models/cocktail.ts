@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import Measure from './measure';
 import Ingredient from './ingredient';
 
 export interface CocktailFromSourceProps {
@@ -73,56 +74,83 @@ export default class Cocktail {
   @Column()
   public glass!: string;
 
-  @ManyToMany((_) => Ingredient)
-  public ingredients!: Ingredient[];
+  @OneToMany(() => Measure, (ingredient) => ingredient.cocktail)
+  public measures!: Measure[];
 
-  @Column()
-  public category?: string | null;
+  @Column({
+    nullable: true
+  })
+  public category?: string;
 
-  @Column()
-  public video?: string | null;
+  @Column({
+    nullable: true
+  })
+  public video?: string;
 
-  @Column()
-  public tags?: string | null;
+  @Column({
+    nullable: true
+  })
+  public tags?: string;
 
-  @Column()
-  public instructions?: string | null;
+  @Column('text')
+  public instructions?: string;
 
-  @Column()
-  public instructionsES?: string | null;
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  public instructionsES?: string;
 
-  @Column()
-  public instructionsDE?: string | null;
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  public instructionsDE?: string;
 
-  @Column()
-  public instructionsFR?: string | null;
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  public instructionsFR?: string;
 
-  @Column()
-  public instructionsIT?: string | null;
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  public instructionsIT?: string;
 
-  @Column()
-  public instructionsPtBR?: string | null;
+  @Column({
+    nullable: true,
+    type: 'text'
+  })
+  public instructionsPtBR?: string;
 
-  @Column()
-  public dateModified?: string | null;
+  @Column({
+    nullable: true
+  })
+  public dateModified?: string;
 
-  @Column()
-  public iba?: string | null;
+  @Column({
+    nullable: true
+  })
+  public iba?: string;
 
-  constructor(props: Cocktail) {
+  constructor(props?: Cocktail) {
     Object.assign(this, {
       ...props,
-      ingredients: props.ingredients.map((i) => new Ingredient(i))
+      measures: props?.measures.map((i) => new Measure(i))
     });
   }
 
   static fromSource(props: CocktailFromSourceProps) {
-    const ingredients: Ingredient[] = [];
+    const measures: Measure[] = [];
     (Object.keys(props) as Array<keyof CocktailFromSourceProps>).forEach((key) => {
       if (key.includes('Ingredient') && !!props[key]) {
-        ingredients.push(new Ingredient({
-          name: props[key]!,
-          measure: props[`strMeasure${key.split('Ingredient')[1]}` as keyof CocktailFromSourceProps]
+        measures.push(new Measure({
+          measure: props[`strMeasure${key.split('Ingredient')[1]}` as keyof CocktailFromSourceProps],
+          data: new Ingredient({
+            name: props[key]!
+          })
         }));
       }
     });
@@ -143,8 +171,7 @@ export default class Cocktail {
       instructionsIT: props.strInstructionsIT,
       dateModified: props.dateModified,
       iba: props.strIBA,
-      instructionsPtBR: null,
-      ingredients
+      measures
     });
   }
 }

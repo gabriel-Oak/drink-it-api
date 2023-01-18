@@ -1,14 +1,18 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import Measure from './measure';
 
 @Entity()
 export default class Ingredient {
-  @Column()
+  @PrimaryGeneratedColumn('uuid')
+  public id?: string;
+
+  @Column({ unique: true })
   public name!: string;
 
-  @Column()
-  public measure?: string;
+  @OneToMany(() => Measure, (cocktail) => cocktail.data)
+  public cocktails?: Measure[];
 
-  constructor(props: Ingredient) {
+  constructor(props?: Ingredient) {
     Object.assign(this, props);
   }
 }

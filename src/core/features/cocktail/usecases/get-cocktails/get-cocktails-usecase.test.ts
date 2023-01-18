@@ -5,13 +5,19 @@ import GetCocktailsUsecase from './get-cocktails-usecase';
 import { cocktailDetailMock, cocktailsListMock } from '../../mocks/cocktail';
 import { Left, Right } from '../../../../utils/types';
 import Cocktail from '../../models/cocktail';
+import { IInternalCocktailDatasource } from '../../datasources/internal-datasource/types';
 
 describe('GetCocktailsUsecase Tests', () => {
   const externalDatasourceMock = mock<ICocktailExternalDatasource>();
-  const usecase: IGetCocktailsUsecase = new GetCocktailsUsecase(externalDatasourceMock);
+  const internalDatasourceMock = mock<IInternalCocktailDatasource>();
+  const usecase: IGetCocktailsUsecase = new GetCocktailsUsecase(
+    externalDatasourceMock,
+    internalDatasourceMock
+  );
 
   beforeEach(() => {
     mockReset(externalDatasourceMock);
+    mockReset(internalDatasourceMock);
   });
 
   it('Should get full cocktails list', async () => {

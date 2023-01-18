@@ -1,22 +1,11 @@
 import fastify from 'fastify';
+import cors from '@fastify/cors';
 import createRouter from './routes';
-// import HttpError from '../core/utils/errors/http-error';
-// import createLoggerService from '../core/utils/services/logger';
-// import router from './routes';
+import DatabaseService from '../core/utils/services/database-service';
 
 const app = fastify();
+void app.register(cors);
+void DatabaseService.initialize();
 createRouter(app);
-// app.(express.json());
-// app.use(router);
-// app.use((error: ErrorRequestHandler, _req: Request, res: Response, _: NextFunction) => {
-//   const httpError = new HttpError({
-//     message: 'Comportamento inesperado:',
-//     meta: String(error)
-//   });
-
-//   const logger = createLoggerService();
-//   logger.error(httpError.message, error);
-//   res.status(httpError.statusCode).json(httpError);
-// });
 
 export default app;
