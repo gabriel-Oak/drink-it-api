@@ -21,16 +21,16 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
       if (!cocktailExists) await this.cocktailRepository.save(cocktail);
 
       for (const measure of cocktail.measures) {
-        const ingredientExists = await this.ingredientRepository.findOne({ where: { name: measure.data.name } });
+        const ingredientExists = await this.ingredientRepository.findOne({ where: { name: measure.ingredient.name } });
 
         const newMeasure = new Measure({
           ...measure,
-          data: ingredientExists ?? await this.ingredientRepository.save(measure.data),
+          ingredient: ingredientExists ?? await this.ingredientRepository.save(measure.ingredient),
           cocktail
         });
 
         const measureExists = await this.measureRepository.findOne({
-          where: { cocktail, data: newMeasure.data }
+          where: { cocktail, ingredient: newMeasure.ingredient }
         });
 
         if (!measureExists) await this.measureRepository.save(newMeasure);
@@ -51,7 +51,7 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
     try {
       const cocktail = await this.cocktailRepository.findOne({
         where: { id: cocktailId },
-        relations: ['measures', 'measures.data']
+        relations: ['measures', 'measures.ingredient']
       });
       return new Right(cocktail);
     } catch (e) {
@@ -69,7 +69,8 @@ export default class InternalCocktailDatasource implements IInternalCocktailData
       const cocktails = await this.cocktailRepository.find({
         where: {
           id: In(cocktailsIds)
-        }
+        },
+        relations: ['measures', 'measures.ingredient']
       });
       return new Right(cocktails);
     } catch (e) {

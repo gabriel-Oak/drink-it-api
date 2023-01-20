@@ -16,7 +16,7 @@ export default class Measure {
   public measure?: string;
 
   @ManyToOne(() => Ingredient, (ingredient) => ingredient.cocktails)
-  public data!: Ingredient;
+  public ingredient!: Ingredient;
 
   constructor(props?: Measure) {
     Object.assign(this, props);

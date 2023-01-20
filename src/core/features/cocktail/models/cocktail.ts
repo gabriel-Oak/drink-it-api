@@ -148,7 +148,7 @@ export default class Cocktail {
       if (key.includes('Ingredient') && !!props[key]) {
         measures.push(new Measure({
           measure: props[`strMeasure${key.split('Ingredient')[1]}` as keyof CocktailFromSourceProps],
-          data: new Ingredient({
+          ingredient: new Ingredient({
             name: props[key]!
           })
         }));

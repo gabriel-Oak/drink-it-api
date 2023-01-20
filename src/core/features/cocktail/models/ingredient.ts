@@ -9,7 +9,7 @@ export default class Ingredient {
   @Column({ unique: true })
   public name!: string;
 
-  @OneToMany(() => Measure, (cocktail) => cocktail.data)
+  @OneToMany(() => Measure, (measure) => measure.ingredient)
   public cocktails?: Measure[];
 
   constructor(props?: Ingredient) {
