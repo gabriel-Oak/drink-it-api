@@ -1,0 +1,14 @@
+import BaseError from 'core/utils/errors/base-error';
+import { Either } from 'core/utils/types';
+import User from '../../models/user';
+
+export class InternalUserDatasourceError extends BaseError {
+  public readonly type = 'internal-user-datasource';
+}
+
+export interface IInternalUserDatasource {
+  findByEmail: (email: string) => Promise<Either<InternalUserDatasourceError, User | null>>;
+  findById: (email: string) => Promise<Either<InternalUserDatasourceError, User | null>>;
+  save: (user: User) => Promise<Either<InternalUserDatasourceError, User>>;
+  remove: (user: User) => Promise<Either<InternalUserDatasourceError, User>>;
+}
