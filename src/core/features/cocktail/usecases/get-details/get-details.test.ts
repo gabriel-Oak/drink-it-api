@@ -5,7 +5,7 @@ import { IInternalCocktailDatasource } from '../../datasources/internal-datasour
 import { cocktailDetailMock } from '../../mocks/cocktail';
 import Cocktail from '../../models/cocktail';
 import GetDetailsUsecase from './get-details';
-import { DetailsNotFoundError, IGetDetailsUsecase } from './type';
+import { DetailsNotFoundError, GetDetailsValidationError, IGetDetailsUsecase } from './type';
 
 describe('GetDetailsUsecase Tests', () => {
   const internalDatasourceMock = mock<IInternalCocktailDatasource>();
@@ -21,6 +21,14 @@ describe('GetDetailsUsecase Tests', () => {
     mockReset(externalDatasourceMock);
   });
 
+  it('Should validate search id', async () => {
+    internalDatasourceMock.findOne.mockImplementation(async () => new Right(cocktailMock));
+    const result = await usecase.execute('');
+
+    expect(result).toBeInstanceOf(Left);
+    expect((result as Left<unknown>).error).toBeInstanceOf(GetDetailsValidationError);
+  });
+
   it('Should get cocktail internally', async () => {
     internalDatasourceMock.findOne.mockImplementation(async () => new Right(cocktailMock));
     const result = await usecase.execute('34897');
@@ -33,7 +41,7 @@ describe('GetDetailsUsecase Tests', () => {
   it('Should get cocktail external', async () => {
     internalDatasourceMock.findOne.mockImplementation(async () => new Right(null));
     externalDatasourceMock.getCocktailDetail.mockImplementation(async () => new Right(cocktailMock));
-    const result = await usecase.execute('34897', true);
+    const result = await usecase.execute('34897');
 
     expect(result).toBeInstanceOf(Right);
     expect((result as Right<unknown>).success).toBeInstanceOf(Cocktail);

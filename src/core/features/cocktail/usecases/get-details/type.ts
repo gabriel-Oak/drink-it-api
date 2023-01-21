@@ -12,10 +12,19 @@ export class DetailsNotFoundError extends BaseError {
   }
 }
 
+export class GetDetailsValidationError extends BaseError {
+  public readonly type = 'get-detail-validation';
+
+  constructor() {
+    super('Sorry, you need to specify a cocktail id to search');
+  }
+}
+
 export type getDetailsErrors = InternalCocktailDatasourceError
 | CocktailDatasourceError
-| DetailsNotFoundError;
+| DetailsNotFoundError
+| GetDetailsValidationError;
 
 export interface IGetDetailsUsecase {
-  execute: (cocktailId: string, save?: boolean) => Promise<Either<getDetailsErrors, Cocktail>>;
+  execute: (cocktailId: string) => Promise<Either<getDetailsErrors, Cocktail>>;
 }
