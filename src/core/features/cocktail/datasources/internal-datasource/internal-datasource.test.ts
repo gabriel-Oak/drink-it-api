@@ -33,7 +33,9 @@ describe('InternalCocktailDatasource Tests', () => {
   it('Should save cocktail', async () => {
     cocktailRepositoryMock.save.mockImplementation(async (c) => c as any);
     measureRepositoryMock.save.mockImplementation(async (m) => m as any);
+    measureRepositoryMock.findOne.mockImplementation(async () => cocktailMock.measures[0] as any);
     ingredientRepositoryMock.save.mockImplementation(async (i) => i as any);
+    ingredientRepositoryMock.findOne.mockImplementationOnce(async () => cocktailMock.measures[0].ingredient);
     const result = await datasource.saveOne(cocktailMock);
 
     expect(result).toBeInstanceOf(Right);

@@ -22,7 +22,10 @@ export default class User {
   @Column('text')
   public username!: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    nullable: true
+  })
   public password?: string;
 
   constructor(props?: UserProps) {
