@@ -1,11 +1,13 @@
 import { FastifyInstance } from 'fastify';
 import createCocktailController from '../core/features/cocktail/controller';
+import createUserController from '../core/features/users/controller';
 import buildRoutes from '../core/utils/controller/build-routes';
 import HttpError from '../core/utils/errors/http-error';
 
 const createRouter = (app: FastifyInstance) => {
   buildRoutes(app, [
-    createCocktailController
+    createCocktailController,
+    createUserController
   ]);
 
   app.get('/health', (_, res) => res.code(200).send({ status: 'ok' }));

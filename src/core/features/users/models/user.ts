@@ -37,10 +37,8 @@ export default class User {
     this.password = await hash(this.password!, 12);
   }
 
-  static async comparePasswords(
-    candidatePassword: string,
-    hashedPassword: string
-  ) {
-    return await compare(candidatePassword, hashedPassword);
+  async comparePasswords(candidatePassword: string) {
+    if (this.password) return await compare(candidatePassword, this.password);
+    return false;
   }
 }

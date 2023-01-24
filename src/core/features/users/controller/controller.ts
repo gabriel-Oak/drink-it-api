@@ -20,10 +20,11 @@ export default class UserController {
     const payload = req.body as UserProps;
     const validate = this.validateUser.execute(payload);
     if (validate.isError) {
-      return await reply.code(400).send(new HttpError({
+      const error = new HttpError({
         ...validate.error,
         statusCode: 400
-      }));
+      });
+      return await reply.code(error.statusCode).send(error);
     }
 
     const insertResult = await this.insertUser.execute(payload);

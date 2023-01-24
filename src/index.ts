@@ -1,6 +1,8 @@
 import './fastify/config';
 import 'reflect-metadata';
-import startServerFastify from './fastify/server';
+import startServer from './fastify/server';
+import createLoggerService from './core/utils/services/logger';
 
-startServerFastify()
-  .catch(console.error);
+const logger = createLoggerService();
+startServer()
+  .catch((error) => logger.error(error.message ?? error, error));
