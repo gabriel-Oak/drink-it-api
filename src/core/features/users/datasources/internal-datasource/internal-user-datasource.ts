@@ -41,8 +41,7 @@ export default class InternalUserDatasource implements IInternalUserDatasource {
   async save(user: User) {
     try {
       const result = await this.userRepository.save(user);
-      console.log(result);
-
+      result.password = undefined;
       return new Right(result);
     } catch (e) {
       const error = new InternalUserDatasourceError(

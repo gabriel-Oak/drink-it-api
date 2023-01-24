@@ -3,7 +3,7 @@ import { mock, mockDeep, mockReset } from 'jest-mock-extended';
 import { IInsertUserUsecase, InsertUserAlreadyExist } from '../usecases/insert-user/types';
 import { IValidateUserUsecase, ValidateUserError } from '../usecases/validate-user/types';
 import { ISignUserTokenUsecase } from '../usecases/sign-user-token/types';
-import { UserProps } from '../models/user';
+import User, { UserProps } from '../models/user';
 import UserController from './controller';
 import { Left, Right } from '../../../utils/types';
 import HttpError from '../../../utils/errors/http-error';
@@ -56,5 +56,20 @@ describe('UserController Tests', () => {
       message: 'User already exist, try a different email',
       statusCode: 409
     }));
+  });
+
+  it('Should return user and token', async () => {
+    validateUserMock.execute
+      .mockImplementation(() => new Right(null));
+    insertUserMock.execute
+      .mockImplementation(async () => new Right(new User({ ...body, password: undefined })));
+    signUserTokenMock.execute
+      .mockImplementation(() => 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha');
+    await controller.createUser(requestMock, replyMock);
+
+    expect(replyMock.send).toHaveBeenCalledWith({
+      user: new User({ ...body, password: undefined }),
+      token: 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha'
+    });
   });
 });

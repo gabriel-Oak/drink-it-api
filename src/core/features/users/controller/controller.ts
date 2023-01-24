@@ -13,7 +13,7 @@ export default class UserController {
     private readonly validateUser: IValidateUserUsecase,
     private readonly insertUser: IInsertUserUsecase,
     private readonly signUserToken: ISignUserTokenUsecase
-  ) {}
+  ) { }
 
   @post('/new')
   async createUser(req: FastifyRequest, reply: FastifyReply) {
@@ -25,5 +25,16 @@ export default class UserController {
         statusCode: 400
       }));
     }
+
+    const insertResult = await this.insertUser.execute(payload);
+    if (insertResult.isError) {
+      const error = new HttpError(insertResult.error);
+      if (insertResult.error.type === 'insert-user-already-exist') error.statusCode = 409;
+      return await reply.code(error.statusCode).send(error);
+    }
+
+    const { success: user } = insertResult;
+    const token = this.signUserToken.execute(user);
+    return await reply.send({ token, user });
   }
 }

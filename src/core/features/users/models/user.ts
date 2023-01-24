@@ -5,7 +5,7 @@ export interface UserProps {
   name: string;
   email: string;
   username: string;
-  password: string;
+  password?: string;
 }
 
 @Entity()
