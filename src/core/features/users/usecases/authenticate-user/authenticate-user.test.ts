@@ -1,6 +1,6 @@
 import { mock, mockReset } from 'jest-mock-extended';
 import { IInternalUserDatasource, InternalUserDatasourceError } from '../../datasources/internal-datasource/types';
-import { AuthenticateUserNotFoundError, AuthenticateUserWrongPasswordError, IAuthenticateUserUsecase, LoginPayload } from './types'
+import { AuthenticateInvalidError, AuthenticateUserNotFoundError, AuthenticateUserWrongPasswordError, IAuthenticateUserUsecase, LoginPayload } from './types'
 import AuthenticateUserUsecase from './authenticate-user'
 import { Left, Right } from '../../../../utils/types';
 import User from '../../models/user';
@@ -59,5 +59,12 @@ describe('AuthenticateUserUsecase Tests', () => {
 
     expect(result).toBeInstanceOf(Right);
     expect((result as Right<unknown>).success).toBeInstanceOf(User);
+  });
+
+  it('Should return invalid data error', async () => {
+    const result = await usecase.execute({ email: 'joisjdof' } as any);
+
+    expect(result).toBeInstanceOf(Left);
+    expect((result as Left<unknown>).error).toBeInstanceOf(AuthenticateInvalidError);
   });
 });

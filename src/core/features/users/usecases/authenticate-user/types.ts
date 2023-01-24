@@ -8,6 +8,11 @@ export interface LoginPayload {
   password: string;
 }
 
+export class AuthenticateInvalidError extends BaseError {
+  public readonly type = 'authenticate-invalid';
+  constructor() { super('Oh looks like you didn\'t specify an email or a password'); }
+}
+
 export class AuthenticateUserNotFoundError extends BaseError {
   public readonly type = 'authenticate-user-not-found';
   constructor() { super('Sorry couldn\'t find any user for this email =/'); }
@@ -20,7 +25,8 @@ export class AuthenticateUserWrongPasswordError extends BaseError {
 
 export type authenticateUserErrors = InternalUserDatasourceError
 | AuthenticateUserNotFoundError
-| AuthenticateUserWrongPasswordError;
+| AuthenticateUserWrongPasswordError
+| AuthenticateInvalidError;
 
 export interface IAuthenticateUserUsecase {
   execute: (payload: LoginPayload) => Promise<Either<authenticateUserErrors, User>>

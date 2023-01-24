@@ -7,6 +7,7 @@ import User, { UserProps } from '../models/user';
 import UserController from './controller';
 import { Left, Right } from '../../../utils/types';
 import HttpError from '../../../utils/errors/http-error';
+import { AuthenticateInvalidError, AuthenticateUserNotFoundError, AuthenticateUserWrongPasswordError, IAuthenticateUserUsecase } from '../usecases/authenticate-user/types';
 
 describe('UserController Tests', () => {
   const body: UserProps = {
@@ -21,7 +22,14 @@ describe('UserController Tests', () => {
   const validateUserMock = mock<IValidateUserUsecase>();
   const insertUserMock = mock<IInsertUserUsecase>();
   const signUserTokenMock = mock<ISignUserTokenUsecase>();
-  const controller = new UserController(validateUserMock, insertUserMock, signUserTokenMock);
+  const authenticateUserMock = mock<IAuthenticateUserUsecase>();
+
+  const controller = new UserController(
+    validateUserMock,
+    insertUserMock,
+    signUserTokenMock,
+    authenticateUserMock
+  );
 
   beforeEach(() => {
     mockReset(requestMock);
@@ -29,13 +37,14 @@ describe('UserController Tests', () => {
     mockReset(validateUserMock);
     mockReset(insertUserMock);
     mockReset(signUserTokenMock);
+    mockReset(authenticateUserMock);
     replyMock.code.mockImplementation(() => replyMock);
   });
 
   it('Should return paylod invalid creating user', async () => {
     validateUserMock.execute
       .mockImplementation(() => new Left(new ValidateUserError('Too dam hot')));
-    await controller.createUser(requestMock, replyMock);
+    await controller.new(requestMock, replyMock);
 
     expect(replyMock.code).toHaveBeenCalledWith(400);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
@@ -49,7 +58,7 @@ describe('UserController Tests', () => {
       .mockImplementation(() => new Right(null));
     insertUserMock.execute
       .mockImplementation(async () => new Left(new InsertUserAlreadyExist()));
-    await controller.createUser(requestMock, replyMock);
+    await controller.new(requestMock, replyMock);
 
     expect(replyMock.code).toHaveBeenCalledWith(409);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
@@ -65,10 +74,60 @@ describe('UserController Tests', () => {
       .mockImplementation(async () => new Right(new User({ ...body, password: undefined })));
     signUserTokenMock.execute
       .mockImplementation(() => 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha');
-    await controller.createUser(requestMock, replyMock);
+    await controller.new(requestMock, replyMock);
 
     expect(replyMock.send).toHaveBeenCalledWith({
       user: new User({ ...body, password: undefined }),
+      token: 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha'
+    });
+  });
+
+  it('Should return authenticate user not foud', async () => {
+    authenticateUserMock.execute
+      .mockImplementation(async () => new Left(new AuthenticateUserNotFoundError()));
+    await controller.authenticate(requestMock, replyMock);
+
+    expect(replyMock.code).toHaveBeenCalledWith(404)
+    expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
+      statusCode: 404,
+      message: 'Sorry couldn\'t find any user for this email =/'
+    }));
+  });
+
+  it('Should return invalid payload error', async () => {
+    authenticateUserMock.execute
+      .mockImplementation(async () => new Left(new AuthenticateInvalidError()));
+    await controller.authenticate(requestMock, replyMock);
+
+    expect(replyMock.code).toHaveBeenCalledWith(400)
+    expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
+      statusCode: 400,
+      message: 'Oh looks like you didn\'t specify an email or a password'
+    }));
+  });
+
+  it('Should return authenticate wrong password', async () => {
+    authenticateUserMock.execute
+      .mockImplementation(async () => new Left(new AuthenticateUserWrongPasswordError()));
+    await controller.authenticate(requestMock, replyMock);
+
+    expect(replyMock.code).toHaveBeenCalledWith(403)
+    expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
+      statusCode: 403,
+      message: 'Wrong password, please try again'
+    }));
+  });
+
+  it('Should return authenticated user', async () => {
+    const user = new User({ ...body, password: undefined });
+    authenticateUserMock.execute
+      .mockImplementation(async () => new Right(user));
+    signUserTokenMock.execute
+      .mockImplementation(() => 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha');
+    await controller.authenticate(requestMock, replyMock);
+
+    expect(replyMock.send).toHaveBeenCalledWith({
+      user,
       token: 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha'
     });
   });
