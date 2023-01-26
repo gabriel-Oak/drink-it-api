@@ -1,9 +1,16 @@
 import { ISignUserTokenUsecase } from './types';
 import SignUserTokenUsecase from './sign-user-token';
 import User from '../../models/user';
+import { mock, mockReset } from 'jest-mock-extended';
+import { ICacheService } from '../../../../utils/services/cache-service/types';
 
 describe('SignUserUsecase Tests', () => {
-  const usecase: ISignUserTokenUsecase = new SignUserTokenUsecase();
+  const cacheMock = mock<ICacheService>();
+  const usecase: ISignUserTokenUsecase = new SignUserTokenUsecase(cacheMock);
+
+  beforeEach(() => {
+    mockReset(cacheMock);
+  });
 
   it('Should sign token', () => {
     const token = usecase.execute(new User({

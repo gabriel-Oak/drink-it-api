@@ -41,4 +41,13 @@ export default class User {
     if (this.password) return await compare(candidatePassword, this.password);
     return false;
   }
+
+  getProps() {
+    return {
+      id: this.id,
+      name: this.name,
+      username: this.username,
+      email: this.email
+    }
+  }
 }
