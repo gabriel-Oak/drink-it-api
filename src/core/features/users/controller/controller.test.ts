@@ -7,7 +7,10 @@ import User, { UserProps } from '../models/user';
 import UserController from './controller';
 import { Left, Right } from '../../../utils/types';
 import HttpError from '../../../utils/errors/http-error';
-import { AuthenticateInvalidError, AuthenticateUserNotFoundError, AuthenticateUserWrongPasswordError, IAuthenticateUserUsecase } from '../usecases/authenticate-user/types';
+import {
+  AuthenticateInvalidError, AuthenticateUserNotFoundError, AuthenticateUserWrongPasswordError, IAuthenticateUserUsecase
+} from '../usecases/authenticate-user/types';
+import { IDecodeUserTokenUsecase } from '../usecases/decode-user-token/types';
 
 describe('UserController Tests', () => {
   const body: UserProps = {
@@ -23,12 +26,15 @@ describe('UserController Tests', () => {
   const insertUserMock = mock<IInsertUserUsecase>();
   const signUserTokenMock = mock<ISignUserTokenUsecase>();
   const authenticateUserMock = mock<IAuthenticateUserUsecase>();
+  const decodeUserTokenMock = mock<IDecodeUserTokenUsecase>();
+  const userMock = new User({ ...body, password: undefined });
 
   const controller = new UserController(
     validateUserMock,
     insertUserMock,
     signUserTokenMock,
-    authenticateUserMock
+    authenticateUserMock,
+    decodeUserTokenMock
   );
 
   beforeEach(() => {
@@ -38,6 +44,7 @@ describe('UserController Tests', () => {
     mockReset(insertUserMock);
     mockReset(signUserTokenMock);
     mockReset(authenticateUserMock);
+    mockReset(decodeUserTokenMock);
     replyMock.code.mockImplementation(() => replyMock);
   });
 
@@ -119,16 +126,19 @@ describe('UserController Tests', () => {
   });
 
   it('Should return authenticated user', async () => {
-    const user = new User({ ...body, password: undefined });
     authenticateUserMock.execute
-      .mockImplementation(async () => new Right(user));
+      .mockImplementation(async () => new Right(userMock));
     signUserTokenMock.execute
       .mockImplementation(() => 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha');
     await controller.authenticate(requestMock, replyMock);
 
     expect(replyMock.send).toHaveBeenCalledWith({
-      user,
+      user: userMock,
       token: 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha'
     });
+  });
+
+  it('Should decode user', async () => {
+    decodeUserTokenMock.execute.mockImplementation(async () => new Right(userMock));
   });
 });

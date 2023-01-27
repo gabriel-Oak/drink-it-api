@@ -4,6 +4,7 @@ import post from '../../../utils/controller/decorators/post';
 import HttpError from '../../../utils/errors/http-error';
 import { UserProps } from '../models/user';
 import { IAuthenticateUserUsecase, LoginPayload } from '../usecases/authenticate-user/types';
+import { IDecodeUserTokenUsecase } from '../usecases/decode-user-token/types';
 import { IInsertUserUsecase } from '../usecases/insert-user/types';
 import { ISignUserTokenUsecase } from '../usecases/sign-user-token/types';
 import { IValidateUserUsecase } from '../usecases/validate-user/types';
@@ -14,7 +15,8 @@ export default class UserController {
     private readonly validateUser: IValidateUserUsecase,
     private readonly insertUser: IInsertUserUsecase,
     private readonly signUserToken: ISignUserTokenUsecase,
-    private readonly authenticateUser: IAuthenticateUserUsecase
+    private readonly authenticateUser: IAuthenticateUserUsecase,
+    private readonly decodeUserToken: IDecodeUserTokenUsecase
   ) { }
 
   @post('/new')
