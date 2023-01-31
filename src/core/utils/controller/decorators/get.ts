@@ -3,7 +3,6 @@ import { IControllerActionMeta } from '../types';
 
 export default function get(path: string) {
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target: any,
     propertyKey: string
   ) => {

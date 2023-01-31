@@ -29,7 +29,7 @@ describe('UserController Tests', () => {
   const authenticateUserMock = mock<IAuthenticateUserUsecase>();
   const decodeUserTokenMock = mock<IDecodeUserTokenUsecase>();
   const userMock = new User({ ...body, password: undefined });
-  const token = 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha';
+  const auth = 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha';
 
   const controller = new UserController(
     validateUserMock,
@@ -76,18 +76,18 @@ describe('UserController Tests', () => {
     }));
   });
 
-  it('Should return user and token', async () => {
+  it('Should return user and auth', async () => {
     validateUserMock.execute
       .mockImplementation(() => new Right(null));
     insertUserMock.execute
       .mockImplementation(async () => new Right(new User({ ...body, password: undefined })));
     signUserTokenMock.execute
-      .mockImplementation(() => token);
+      .mockImplementation(() => auth);
     await controller.new(requestMock, replyMock);
 
     expect(replyMock.send).toHaveBeenCalledWith({
       user: new User({ ...body, password: undefined }),
-      token
+      auth
     });
   });
 
@@ -131,26 +131,26 @@ describe('UserController Tests', () => {
     authenticateUserMock.execute
       .mockImplementation(async () => new Right(userMock));
     signUserTokenMock.execute
-      .mockImplementation(() => token);
+      .mockImplementation(() => auth);
     await controller.authenticate(requestMock, replyMock);
 
     expect(replyMock.send).toHaveBeenCalledWith({
       user: userMock,
-      token
+      auth
     });
   });
 
   it('Should decode user', async () => {
     decodeUserTokenMock.execute.mockImplementation(async () => new Right(userMock));
-    await controller.decode({ ...requestMock, headers: { token } }, replyMock);
+    await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
     expect(replyMock.send).toHaveBeenCalledWith(userMock);
   });
 
-  it('Should return invalid token', async () => {
+  it('Should return invalid auth', async () => {
     const error = new DecodeUserInvalidTokenError();
     decodeUserTokenMock.execute
       .mockImplementation(async () => new Left(error));
-    await controller.decode({ ...requestMock, headers: { token } }, replyMock);
+    await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError({ ...error, statusCode: 400 }));
     expect(replyMock.code).toHaveBeenCalledWith(400);
   });
@@ -159,7 +159,7 @@ describe('UserController Tests', () => {
     const error = new DecodeUserNotFoundError();
     decodeUserTokenMock.execute
       .mockImplementation(async () => new Left(error));
-    await controller.decode({ ...requestMock, headers: { token } }, replyMock);
+    await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError({ ...error, statusCode: 404 }));
     expect(replyMock.code).toHaveBeenCalledWith(404);
   });
@@ -168,7 +168,7 @@ describe('UserController Tests', () => {
     const error = new InternalUserDatasourceError('');
     decodeUserTokenMock.execute
       .mockImplementation(async () => new Left(error));
-    await controller.decode({ ...requestMock, headers: { token } }, replyMock);
+    await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError(error));
     expect(replyMock.code).toHaveBeenCalledWith(500);
   });

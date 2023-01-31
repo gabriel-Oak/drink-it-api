@@ -40,8 +40,8 @@ export default class UserController {
     }
 
     const { success: user } = insertResult;
-    const token = this.signUserToken.execute(user);
-    return await reply.send({ token, user });
+    const auth = this.signUserToken.execute(user);
+    return await reply.send({ auth, user });
   }
 
   @post('/authenticate')
@@ -61,14 +61,14 @@ export default class UserController {
     }
 
     const { success: user } = authResult;
-    const token = this.signUserToken.execute(user);
-    return await reply.send({ user, token });
+    const auth = this.signUserToken.execute(user);
+    return await reply.send({ user, auth });
   }
 
   @get('/decode')
   async decode(req: FastifyRequest, reply: FastifyReply) {
-    const { token } = req.headers;
-    const result = await this.decodeUserToken.execute(String(token));
+    const { auth } = req.headers;
+    const result = await this.decodeUserToken.execute(String(auth));
     if (!result.isError) return await reply.send(result.success);
 
     const error = new HttpError({
@@ -78,7 +78,6 @@ export default class UserController {
         'decode-user-not-found': 404
       }[String(result.error.type)] ?? 500
     });
-
     return await reply.code(error.statusCode).send(error);
   }
 }
