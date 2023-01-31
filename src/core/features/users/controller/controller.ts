@@ -8,6 +8,7 @@ import { IDecodeUserTokenUsecase } from '../usecases/decode-user-token/types';
 import { IInsertUserUsecase } from '../usecases/insert-user/types';
 import { ISignUserTokenUsecase } from '../usecases/sign-user-token/types';
 import { IValidateUserUsecase } from '../usecases/validate-user/types';
+import get from '../../../utils/controller/decorators/get';
 
 @controller('/user')
 export default class UserController {
@@ -62,5 +63,22 @@ export default class UserController {
     const { success: user } = authResult;
     const token = this.signUserToken.execute(user);
     return await reply.send({ user, token });
+  }
+
+  @get('/decode')
+  async decode(req: FastifyRequest, reply: FastifyReply) {
+    const { token } = req.headers;
+    const result = await this.decodeUserToken.execute(String(token));
+    if (!result.isError) return await reply.send(result.success);
+
+    const error = new HttpError({
+      ...result.error,
+      statusCode: {
+        'decode-user-invalid-token': 400,
+        'decode-user-not-found': 404
+      }[String(result.error.type)] ?? 500
+    });
+
+    return await reply.code(error.statusCode).send(error);
   }
 }
