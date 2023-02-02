@@ -12,6 +12,7 @@ import {
 } from '../usecases/authenticate-user/types';
 import { DecodeUserInvalidTokenError, DecodeUserNotFoundError, IDecodeUserTokenUsecase } from '../usecases/decode-user-token/types';
 import { InternalUserDatasourceError } from '../datasources/internal-datasource/types';
+import { ChangePasswordInvalidOldPassError, ChangePasswordInvalidPassError, IChangePasswordUsecase } from '../usecases/change-password/types';
 
 describe('UserController Tests', () => {
   const body: UserProps = {
@@ -28,6 +29,8 @@ describe('UserController Tests', () => {
   const signUserTokenMock = mock<ISignUserTokenUsecase>();
   const authenticateUserMock = mock<IAuthenticateUserUsecase>();
   const decodeUserTokenMock = mock<IDecodeUserTokenUsecase>();
+  const changePasswordMock = mock<IChangePasswordUsecase>();
+
   const userMock = new User({ ...body, password: undefined });
   const auth = 'iaehdiosahd8aksjhdjahsd8hjsakh.ajsihdkasdkashdkhaskdjhaksd.jkasdjkhaskdhaksdhkasjdha';
 
@@ -36,7 +39,8 @@ describe('UserController Tests', () => {
     insertUserMock,
     signUserTokenMock,
     authenticateUserMock,
-    decodeUserTokenMock
+    decodeUserTokenMock,
+    changePasswordMock
   );
 
   beforeEach(() => {
@@ -47,6 +51,7 @@ describe('UserController Tests', () => {
     mockReset(signUserTokenMock);
     mockReset(authenticateUserMock);
     mockReset(decodeUserTokenMock);
+    mockReset(changePasswordMock);
     replyMock.code.mockImplementation(() => replyMock);
   });
 
@@ -171,5 +176,49 @@ describe('UserController Tests', () => {
     await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError(error));
     expect(replyMock.code).toHaveBeenCalledWith(500);
+  });
+
+  it('Should change user password', async () => {
+    changePasswordMock.execute
+      .mockImplementation(async () => new Right('Success my boy'));
+    await controller.changeUserPassword(
+      { ...requestMock, headers: { auth } },
+      replyMock,
+      userMock
+    );
+
+    expect(replyMock.send).toHaveBeenCalledWith({ message: 'Success my boy' });
+  });
+
+  it('Should handle ChangePasswordInvalidPassError', async () => {
+    changePasswordMock.execute
+      .mockImplementation(async () => new Left(new ChangePasswordInvalidPassError()));
+    await controller.changeUserPassword(
+      { ...requestMock, headers: { auth } },
+      replyMock,
+      userMock
+    );
+
+    expect(replyMock.code).toHaveBeenCalledWith(400);
+    expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
+      statusCode: 400,
+      message: 'Invalid passwords informed, check if its spelled right and try again'
+    }));
+  });
+
+  it('Should handle ChangePasswordInvalidOldPassError', async () => {
+    changePasswordMock.execute
+      .mockImplementation(async () => new Left(new ChangePasswordInvalidOldPassError()));
+    await controller.changeUserPassword(
+      { ...requestMock, headers: { auth } },
+      replyMock,
+      userMock
+    );
+
+    expect(replyMock.code).toHaveBeenCalledWith(400);
+    expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
+      statusCode: 400,
+      message: 'Invalid old password, check if its spelled right and try again'
+    }));
   });
 });

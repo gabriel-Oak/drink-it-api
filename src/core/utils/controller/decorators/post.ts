@@ -1,7 +1,7 @@
 import { SYMBOL_POST } from './symbols';
 import { IControllerActionMeta } from '../types';
 
-export default function post(path: string) {
+const post = (path: string) => {
   return (
     target: object,
     propertyKey: string
@@ -18,3 +18,5 @@ export default function post(path: string) {
     Reflect.defineMetadata(SYMBOL_POST, gets, target.constructor);
   };
 }
+
+export default post;

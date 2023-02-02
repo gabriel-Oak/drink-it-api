@@ -1,4 +1,5 @@
 import createAuthenticateUserUsecase from '../usecases/authenticate-user/inedx';
+import createChangePasswordUsecase from '../usecases/change-password';
 import createDecodeUserTokenUsecase from '../usecases/decode-user-token';
 import createInsertUserUsecase from '../usecases/insert-user';
 import createSignUserTokenUsecase from '../usecases/sign-user-token';
@@ -10,7 +11,8 @@ const createUserController = () => new UserController(
   createInsertUserUsecase(),
   createSignUserTokenUsecase(),
   createAuthenticateUserUsecase(),
-  createDecodeUserTokenUsecase()
+  createDecodeUserTokenUsecase(),
+  createChangePasswordUsecase()
 );
 
 export default createUserController;

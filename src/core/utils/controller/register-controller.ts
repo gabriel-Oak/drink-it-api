@@ -5,7 +5,7 @@ import { decodeUserTokenErrors } from '../../features/users/usecases/decode-user
 import HttpError from '../errors/http-error';
 import createLoggerService from '../services/logger';
 import { Either } from '../types';
-import { SYMBOL_GET, SYMBOL_POST, SYMBOL_PRIVATE } from './decorators/symbols';
+import { SYMBOL_DELETE, SYMBOL_GET, SYMBOL_PATCH, SYMBOL_POST, SYMBOL_PRIVATE, SYMBOL_PUT } from './decorators/symbols';
 import { controllerAction, IControllerActionMeta } from './types';
 
 export default function registerController(
@@ -13,7 +13,10 @@ export default function registerController(
   controller: object,
   app: FastifyInstance
 ) {
-  function processMeta(symbol: symbol, method: 'get' | 'post') {
+  function processMeta(
+    symbol: symbol,
+    method: 'get' | 'post' | 'patch' | 'put' | 'delete'
+  ) {
     if (Reflect.hasMetadata(symbol, controller.constructor)) {
       const actions = Reflect.getMetadata(
         symbol,
@@ -29,7 +32,7 @@ export default function registerController(
         app[method](`${path}${actionPath}`, async (req, rep) => {
           try {
             let user: User;
-            if (privateRoutes.includes(action)) {
+            if (privateRoutes?.includes(action)) {
               const decoder = createDecodeUserTokenUsecase();
               const { auth } = req.headers;
               const decodeResult: Either<decodeUserTokenErrors, User> = await decoder.execute(String(auth));
@@ -65,4 +68,7 @@ export default function registerController(
 
   processMeta(SYMBOL_GET, 'get');
   processMeta(SYMBOL_POST, 'post');
+  processMeta(SYMBOL_PATCH, 'patch');
+  processMeta(SYMBOL_PUT, 'put');
+  processMeta(SYMBOL_DELETE, 'delete');
 }

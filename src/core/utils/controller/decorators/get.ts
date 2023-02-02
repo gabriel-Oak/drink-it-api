@@ -1,7 +1,7 @@
 import { SYMBOL_GET } from './symbols';
 import { IControllerActionMeta } from '../types';
 
-export default function get(path: string) {
+const get = (path: string) => {
   return (
     target: any,
     propertyKey: string
@@ -18,3 +18,5 @@ export default function get(path: string) {
     Reflect.defineMetadata(SYMBOL_GET, gets, target.constructor);
   };
 }
+
+export default get;
