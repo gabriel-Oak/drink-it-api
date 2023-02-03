@@ -15,5 +15,5 @@ export type updateUserErrors = UpdateUserInvalidPassError
 | InternalUserDatasourceError;
 
 export interface IUpdateUserUsecase {
-  execute: (user: User, payload: UserProps) => Promise<Either<updateUserErrors, User>>;
+  execute: (user: User, payload: Partial<Omit<UserProps, 'id'>>) => Promise<Either<updateUserErrors, User>>;
 }

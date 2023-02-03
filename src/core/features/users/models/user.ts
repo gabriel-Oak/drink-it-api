@@ -51,4 +51,12 @@ export default class User {
       email: this.email
     }
   }
+
+  updateProps(props: Partial<Omit<UserProps, 'id'>>) {
+    Object.assign(this, {
+      name: props.name ?? this.name,
+      username: props.username ?? this.username,
+      email: props.email ?? this.email
+    });
+  }
 }

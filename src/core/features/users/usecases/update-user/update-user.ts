@@ -8,7 +8,11 @@ export default class UpdateUserUsecase implements IUpdateUserUsecase {
     private readonly userDatasource: IInternalUserDatasource
   ) {}
 
-  async execute(user: User, payload: UserProps) {
-    return null as unknown as Left<UpdateUserInvalidPassError>;
+  async execute(user: User, payload: Partial<Omit<UserProps, 'id'>>) {
+    const passIsValid = payload.password && await user.comparePasswords(payload.password);
+    if (!passIsValid) return new Left(new UpdateUserInvalidPassError());
+
+    user.updateProps(payload);
+    return await this.userDatasource.save(user);
   }
 }
