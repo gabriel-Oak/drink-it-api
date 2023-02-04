@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { compare, hash } from 'bcryptjs';
 import { JWT_SECRET } from '../../../utils/constants';
 export interface UserProps {
@@ -34,8 +34,14 @@ export default class User {
   }
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
-    this.password = await hash(this.password! + JWT_SECRET, 12);
+    if (this.password &&
+      !this.password.includes('$2a$12$') &&
+      this.password.length < 60
+    ) {
+      this.password = await hash(this.password + JWT_SECRET, 12);
+    }
   }
 
   async comparePasswords(candidatePassword: string) {

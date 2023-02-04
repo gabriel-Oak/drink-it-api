@@ -152,7 +152,7 @@ describe('UserController Tests', () => {
   it('Should decode user', async () => {
     decodeUserTokenMock.execute.mockImplementation(async () => new Right(userMock));
     await controller.decode({ ...requestMock, headers: { auth } }, replyMock);
-    expect(replyMock.send).toHaveBeenCalledWith(userMock);
+    expect(replyMock.send).toHaveBeenCalledWith(userMock.getProps());
   });
 
   it('Should return invalid auth', async () => {

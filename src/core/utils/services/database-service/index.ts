@@ -4,6 +4,7 @@ import CocktailIngredient from '../../../features/cocktail/models/measure';
 import Ingredient from '../../../features/cocktail/models/ingredient';
 import { POSTGRE_HOST, POSTGRE_PASS, POSTGRE_PORT, POSTGRE_USER } from '../../constants';
 import createLoggerService from '../logger';
+import User from '../../../features/users/models/user';
 
 const DatabaseService = new DataSource({
   type: 'postgres',
@@ -15,7 +16,8 @@ const DatabaseService = new DataSource({
   entities: [
     CocktailIngredient,
     Ingredient,
-    Cocktail
+    Cocktail,
+    User
   ],
   synchronize: true
 });

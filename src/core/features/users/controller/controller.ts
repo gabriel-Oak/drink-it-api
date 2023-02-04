@@ -29,7 +29,7 @@ export default class UserController {
 
   @post('/new')
   async new(req: FastifyRequest, reply: FastifyReply) {
-    const payload = req.body as UserProps;
+    const payload = req.body as Omit<UserProps, 'id'>;
     const validate = this.validateUser.execute(payload);
     if (validate.isError) {
       const error = new HttpError({
@@ -76,7 +76,7 @@ export default class UserController {
   async decode(req: FastifyRequest, reply: FastifyReply) {
     const { auth } = req.headers;
     const result = await this.decodeUserToken.execute(String(auth));
-    if (!result.isError) return await reply.send(result.success);
+    if (!result.isError) return await reply.send(result.success.getProps());
 
     const error = new HttpError({
       ...result.error,

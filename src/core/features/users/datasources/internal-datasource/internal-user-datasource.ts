@@ -15,6 +15,8 @@ export default class InternalUserDatasource implements IInternalUserDatasource {
       const user = await this.userRepository.findOneBy({ email });
       return new Right(user);
     } catch (e) {
+      console.log(e);
+
       const error = new InternalUserDatasourceError(
         (e as any).message || `Oops, sorry got an error searching for ${email}`,
         { ...(e as any), email }
