@@ -12,6 +12,8 @@ import get from '../../../utils/controller/decorators/get';
 import patch from '../../../utils/controller/decorators/patch';
 import privateRoute from '../../../utils/controller/decorators/private-route';
 import { ChangePasswordBody, IChangePasswordUsecase } from '../usecases/change-password/types';
+import { IUpdateUserUsecase, updateUserProps } from '../usecases/update-user/types';
+import put from '../../../utils/controller/decorators/put';
 
 @controller('/user')
 export default class UserController {
@@ -21,7 +23,8 @@ export default class UserController {
     private readonly signUserToken: ISignUserTokenUsecase,
     private readonly authenticateUser: IAuthenticateUserUsecase,
     private readonly decodeUserToken: IDecodeUserTokenUsecase,
-    private readonly changePassword: IChangePasswordUsecase
+    private readonly changePassword: IChangePasswordUsecase,
+    private readonly updateUser: IUpdateUserUsecase
   ) { }
 
   @post('/new')
@@ -99,6 +102,18 @@ export default class UserController {
     if (result.error.type === 'change-password-invalid-pass') {
       error.statusCode = 400;
     }
+    return await reply.code(error.statusCode).send(error);
+  }
+
+  @put('/update-user')
+  @privateRoute()
+  async update(req: FastifyRequest, reply: FastifyReply, user: User) {
+    const { body } = req as { body: updateUserProps };
+    const result = await this.updateUser.execute(user, body);
+    if (!result.isError) return await reply.send(result.success);
+
+    const error = new HttpError(result.error);
+    if (result.error.type === 'update-user-invalid-pass') error.statusCode = 403;
     return await reply.code(error.statusCode).send(error);
   }
 }

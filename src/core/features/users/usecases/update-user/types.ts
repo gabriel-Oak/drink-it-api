@@ -14,6 +14,8 @@ export class UpdateUserInvalidPassError extends BaseError {
 export type updateUserErrors = UpdateUserInvalidPassError
 | InternalUserDatasourceError;
 
+export type updateUserProps = Partial<Omit<UserProps, 'id'>>;
+
 export interface IUpdateUserUsecase {
-  execute: (user: User, payload: Partial<Omit<UserProps, 'id'>>) => Promise<Either<updateUserErrors, User>>;
+  execute: (user: User, payload: updateUserProps) => Promise<Either<updateUserErrors, User>>;
 }
