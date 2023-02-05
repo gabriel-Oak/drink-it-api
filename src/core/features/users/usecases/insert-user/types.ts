@@ -7,7 +7,7 @@ export class InsertUserAlreadyExist extends BaseError {
   public readonly type = 'insert-user-already-exist';
 
   constructor() {
-    super('User already exist, try a different email');
+    super('User already exist, try a different email or usernal');
   }
 }
 

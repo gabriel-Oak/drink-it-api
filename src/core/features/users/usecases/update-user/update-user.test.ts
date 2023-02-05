@@ -32,7 +32,7 @@ describe('UpdateUserUsecase Tests', () => {
 
   it('Should deal with datasource error', async () => {
     userMock.comparePasswords.mockImplementation(async () => true);
-    datasourceMock.save.mockImplementation(async () => new Left(new InternalUserDatasourceError('')));
+    datasourceMock.update.mockImplementation(async () => new Left(new InternalUserDatasourceError('')));
     const result = await usecase.execute(userMock, payloadMock);
 
     expect(result).toBeInstanceOf(Left);
@@ -41,11 +41,10 @@ describe('UpdateUserUsecase Tests', () => {
 
   it('Should update user', async () => {
     userMock.comparePasswords.mockImplementation(async () => true);
-    datasourceMock.save
-      .mockImplementation(async () => new Right(new User(payloadMock)));
+    datasourceMock.update
+      .mockImplementation(async () => new Right(null));
     const result = await usecase.execute(userMock, payloadMock);
 
     expect(result).toBeInstanceOf(Right);
-    expect((result as Right<unknown>).success).toBeInstanceOf(User);
   });
 });

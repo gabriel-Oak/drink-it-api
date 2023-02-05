@@ -14,10 +14,16 @@ export default class User {
   @PrimaryGeneratedColumn('uuid')
   public id?: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    unique: true
+  })
   public name!: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    unique: true
+  })
   public email!: string;
 
   @Column('text')

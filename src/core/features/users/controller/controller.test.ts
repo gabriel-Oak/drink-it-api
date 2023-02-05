@@ -80,7 +80,7 @@ describe('UserController Tests', () => {
 
     expect(replyMock.code).toHaveBeenCalledWith(409);
     expect(replyMock.send).toHaveBeenCalledWith(new HttpError({
-      message: 'User already exist, try a different email',
+      message: 'User already exist, try a different email or usernal',
       statusCode: 409
     }));
   });
@@ -228,14 +228,14 @@ describe('UserController Tests', () => {
 
   it('Should update user', async () => {
     updateUserMock.execute
-      .mockImplementation(async () => new Right(userMock));
+      .mockImplementation(async () => new Right(null));
     await controller.update(
       { ...requestMock, headers: { auth } },
       replyMock,
       userMock
     );
 
-    expect(replyMock.send).toHaveBeenCalledWith(userMock);
+    expect(replyMock.send).toHaveBeenCalled();
   });
 
   it('Should return pass error updatig user', async () => {

@@ -7,7 +7,7 @@ export default class InsertUserUsecase implements IInsertUserUsecase {
   constructor(private readonly userDatasource: IInternalUserDatasource) { }
 
   async execute(user: Omit<UserProps, 'id'>) {
-    const existResult = await this.userDatasource.findByEmail(user.email);
+    const existResult = await this.userDatasource.findByEmailOrUsername(user);
     if (existResult.isError) return existResult;
     if (existResult.success) return new Left(new InsertUserAlreadyExist());
 

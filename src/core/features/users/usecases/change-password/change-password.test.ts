@@ -39,7 +39,7 @@ describe('ChangePasswordUsecase Tests', () => {
 
   it('Should update user password', async () => {
     userMock.comparePasswords.mockImplementation(async () => true);
-    userDatasourceMock.save.mockImplementation(async () => new Right(userMock));
+    userDatasourceMock.update.mockImplementation(async () => new Right(null));
     const result = await usecase.execute(payloadMock);
 
     expect(result).toBeInstanceOf(Right);

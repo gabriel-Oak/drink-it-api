@@ -17,5 +17,5 @@ export type updateUserErrors = UpdateUserInvalidPassError
 export type updateUserProps = Partial<Omit<UserProps, 'id'>>;
 
 export interface IUpdateUserUsecase {
-  execute: (user: User, payload: updateUserProps) => Promise<Either<updateUserErrors, User>>;
+  execute: (user: User, payload: updateUserProps) => Promise<Either<updateUserErrors, null>>;
 }

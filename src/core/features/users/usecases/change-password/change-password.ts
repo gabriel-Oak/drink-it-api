@@ -21,7 +21,7 @@ export default class ChangePasswordUsecase implements IChangePasswordUsecase {
     if (!oldPassIsValid) return new Left(new ChangePasswordInvalidOldPassError());
 
     user.password = payload.newPassword;
-    const insertResult = await this.userDatasource.save(user);
+    const insertResult = await this.userDatasource.update(user);
     if (insertResult.isError) return insertResult;
 
     return new Right('User password has been successfully updated');

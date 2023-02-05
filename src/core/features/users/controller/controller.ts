@@ -110,7 +110,7 @@ export default class UserController {
   async update(req: FastifyRequest, reply: FastifyReply, user: User) {
     const { body } = req as { body: updateUserProps };
     const result = await this.updateUser.execute(user, body);
-    if (!result.isError) return await reply.send(result.success);
+    if (!result.isError) return await reply.send();
 
     const error = new HttpError(result.error);
     if (result.error.type === 'update-user-invalid-pass') error.statusCode = 403;

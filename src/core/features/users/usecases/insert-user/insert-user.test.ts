@@ -17,11 +17,11 @@ describe('InsertUserUsecase Tests', () => {
 
   beforeEach(() => {
     mockReset(datasourceMock);
-    datasourceMock.findByEmail.mockImplementation(async () => new Right(null));
+    datasourceMock.findByEmailOrUsername.mockImplementation(async () => new Right(null));
   });
 
   it('Should return InsertUserAlreadyExist', async () => {
-    datasourceMock.findByEmail.mockImplementation(async () => new Right(new User()));
+    datasourceMock.findByEmailOrUsername.mockImplementation(async () => new Right(new User()));
     const result = await usecase.execute(payloadMock);
 
     expect(result).toBeInstanceOf(Left);

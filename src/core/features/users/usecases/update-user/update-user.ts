@@ -13,6 +13,6 @@ export default class UpdateUserUsecase implements IUpdateUserUsecase {
     if (!passIsValid) return new Left(new UpdateUserInvalidPassError());
 
     user.updateProps(payload);
-    return await this.userDatasource.save(user);
+    return await this.userDatasource.update(user);
   }
 }
